@@ -2,6 +2,8 @@ import { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import{ Nav } from 'react-bootstrap'
 import { Context1 } from './../App.js';
+import { useDispatch, useSelector } from 'react-redux';
+import { addItem } from './../store.js';
 
 // class Detail2 extends React.Component{
 //     componentDidMount(){}
@@ -18,6 +20,7 @@ const Detail = (props) => {
 
     let { 재고 } = useContext(Context1);
 
+    let dispatch = useDispatch();
    
     useEffect(()=>{
       let endTimer = setTimeout(()=>{ setFade2('end') },100);
@@ -29,6 +32,21 @@ const Detail = (props) => {
   
     const { id } = useParams();
     const findItem = props.shoes.find( el => el.id == id );
+
+    useEffect(()=>{
+      let getItem = localStorage.getItem('watched');
+      getItem = JSON.parse(getItem);
+      getItem.push(findItem.id);
+      getItem = new Set(getItem);
+      getItem = Array.from(getItem);
+      localStorage.setItem('watched',JSON.stringify(getItem));
+    },[])
+
+    //누가 Detail 페이지 접속하면
+    // 그 페이지에 보이는 상품 id 가 가져와서
+    // localstorage에 watched 항목에
+    // 만약 상품ID가 중복되면 추가하지 마라.
+
 
     useEffect(()=>{
         setTimeout(()=>{
@@ -51,7 +69,7 @@ const Detail = (props) => {
       <div className={`container start ${fade2}`}>
         <input onChange={(e)=>{setNum(e.target.value)}}/>
         {
-            alert2s === true ? <div className="alert alert-warning">2초이내 구매시 할인</div> : null
+            alert2s === true && <div className="alert alert-warning">2초이내 구매시 할인</div>
         }
         <p>{count}</p>
         <button onClick={()=>{setCount(count++)}}>추가</button>
@@ -63,7 +81,12 @@ const Detail = (props) => {
             <h4 className="pt-5">{ findItem.title }</h4>
             <p>{ findItem.content }</p>
             <p>{ findItem.price }</p>
-            <button className="btn btn-danger">주문하기</button> 
+            <button className="btn btn-danger"
+              onClick={()=>{
+                dispatch(addItem( {id : findItem.id , name : findItem.title , count : 1} ));
+              }}
+            >주문하기</button> 
+          
           </div>
           <Nav variant="tabs"  defaultActiveKey="link0">
             <Nav.Item>

@@ -1,7 +1,7 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 import { Navbar,Container,Nav } from 'react-bootstrap';
-import { createContext, useState } from 'react';
+import { createContext, useEffect, useState } from 'react';
 import data from './data.js';
 import { Routes, Route, Link, useNavigate, Outlet } from 'react-router-dom';
 
@@ -12,8 +12,12 @@ import axios from 'axios';
 
 export let Context1 = createContext();
 
-
 function App() {
+  useEffect(()=>{
+    if(localStorage.length === 0){
+      localStorage.length !== 0 && localStorage.setItem('watched',JSON.stringify([]))
+    }
+  },[])
 
   let [ shoes, setShoes] = useState(data);
   let [ 재고 ] = useState([10,11,12]);
@@ -34,8 +38,6 @@ function App() {
     })
     .catch((err) => {console.log(err.message)})
   }
-
-
   return (
     <div className="App">
       
@@ -43,8 +45,8 @@ function App() {
         <Container>
           <Navbar.Brand><Link to='/'>Navbar</Link></Navbar.Brand>
           <Nav className="me-auto">
-            <Nav.Link onClick={() => {navigate('/detail')}}>Detail</Nav.Link>
             <Nav.Link onClick={() => {navigate('/about')}}>About</Nav.Link>
+            <Nav.Link onClick={() => {navigate('/cart')}}>Cart</Nav.Link>
           </Nav>
         </Container>
       </Navbar>

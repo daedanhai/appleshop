@@ -11,13 +11,35 @@ let stock = createSlice({
 })
 let userCart = createSlice({
     name: 'userCart',
-    initialState: [
-        {id : 0, name : 'White and Black', count : 2},
-        {id : 1, name : 'Grey Yordan', count : 1},
-    ]
+    initialState: [],
+    reducers:{
+        addCount(state, action){
+            let findId = state.findIndex((data)=>{return data.id === action.payload});
+            state[findId].count++
+        },
+        minusCount(state, action){
+            let findId = state.findIndex((data)=>{return data.id === action.payload});
+            if(state[findId].count > 0){
+                state[findId].count--
+            }
+        },
+        addItem( state,action ){
+            let findIndex = state.findIndex( data => data.id === action.payload.id );
+            if(findIndex >= 0){
+                state[findIndex].count += 1;
+                alert('중복된 상품입니다. 장바구니에 수량이 올라갑니다. 현재 상품 수량 ' + state[findIndex].count + ' 개');
+            } else {
+                state.push(action.payload)
+            }
+        },
+        removeItem( state ,action ){
+            let arr = state.filter((data)=>data.id !== action.payload);
+            return arr;
+        },
+    }
 })
 
-export let { changeName, changeAge } = user.actions
+export let { addCount,minusCount, addItem, removeItem } = userCart.actions;
 
 export default configureStore({
     reducer: {
